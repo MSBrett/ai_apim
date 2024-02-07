@@ -1,0 +1,17 @@
+using './main.bicep'
+
+param deploymentName = 'digital'
+param dnsname = 'digital.contoso.com'
+param sslCertValue = 'digital'
+param location = 'eastus'
+param securityCenterContactEmail = 'someone@contoso.com'
+
+param logAnalyticsWorkspaceId = '/subscriptions/<Subscription Id>/resourceGroups/<Resource Group Name>/providers/Microsoft.OperationalInsights/workspaces/<Workspace Name>'
+param logAnalyticsWorkspaceRg= '<Resource Group Name>'
+param logAnalyticsWorkspaceName = '<Workspace Name>'
+param logAnalyticsWorkspaceLocation = 'westus'
+
+param tags = {
+  deploymentName: 'digital'
+  environmentType: 'development'
+}
