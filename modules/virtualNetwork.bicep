@@ -14,6 +14,7 @@ param tags object = {}
 var virtualNetworkName = toLower('${deploymentName}-vnet')
 var bastionHostName = toLower('${deploymentName}-bastion')
 var publicIpName = toLower('${deploymentName}-bastion-pip')
+var ddosPlanName = toLower('${deploymentName}-ddos')
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-02-01' = {
   name: virtualNetworkName
@@ -509,6 +510,13 @@ resource apimNsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
   }
 }
 
+resource ddosPlan 'Microsoft.Network/ddosProtectionPlans@2023-04-01' = {
+  name: ddosPlanName
+  location: location
+  tags: tags
+  properties: {}
+}
+
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   name: publicIpName
   location: location
@@ -520,6 +528,12 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
     publicIPAddressVersion: 'IPv4'
     publicIPAllocationMethod: 'Static'
     idleTimeoutInMinutes: 4
+    ddosSettings: {
+      protectionMode: 'Enabled'
+      ddosProtectionPlan: {
+        id: ddosPlan.id
+      }
+    }
   }
 }
 
