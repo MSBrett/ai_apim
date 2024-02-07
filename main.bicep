@@ -144,7 +144,7 @@ module openAI 'modules/openai.bicep' = {
 module apiManagement 'modules/apim.bicep' = {
   scope: resourceGroup(resourceGroupName)
   name: 'apiManagement'
-  dependsOn: [ openAI ]
+  dependsOn: [ openAI, certificate ]
   params: {
     deploymentName: deploymentName
     location: location
@@ -157,5 +157,6 @@ module apiManagement 'modules/apim.bicep' = {
     dnsname: dnsname
     identityResourceId: identity.outputs.resourceId
     identityClientId: identity.outputs.clientId
+    apiServiceUrl: openAI.outputs.endpoint
   }
 }

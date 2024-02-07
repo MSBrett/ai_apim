@@ -40,7 +40,10 @@ param keyvaultid string
 @description('The ID of the subnet to delegate to APIM.')
 param apimSubnetId string
 
+param apiServiceUrl string
+
 var apiManagementServiceName = '${deploymentName}-apim-${uniqueString(resourceGroup().id)}'
+var apiName = '${deploymentName}-api-${uniqueString(resourceGroup().id)}'
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   name: apiManagementServiceName
@@ -109,3 +112,43 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2023-05-01-previe
     }
   }
 }
+
+#disable-next-line BCP081
+resource publishedApi 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
+  name: apiName
+  parent: apiManagementService
+  properties: {
+    apiRevision: '1'
+    path: '/openai'
+    displayname: 'APIM - Open AI API'
+    description: 'APIM - Open AI API'
+    protocols: [
+      'https'
+    ]
+    serviceUrl: apiServiceUrl
+    import: {
+      contentFormat: 'swagger-link-json'
+      contentValue: 'https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cognitiveservices/data-plane/AzureOpenAI/inference/stable/2023-05-15/inference.json'
+    }
+  }
+}
+
+/*
+
+resource "azurerm_api_management_api" "apim_open_ai_api" {
+  name                = "apim-open-ai-api"
+  resource_group_name = data.terraform_remote_state.network.outputs.workload_rg_name
+  api_management_name = azurerm_api_management.apim.name
+  revision            = "1"
+  display_name        = "APIM - Open AI API"
+  path                = "/openai"
+  protocols           = ["https"]
+  service_url         = azurerm_cognitive_account.openai_account.endpoint
+ 
+  import {
+    content_format = "swagger-link-json"
+    content_value  = "raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cognitiveservices/data-plane/AzureOpenAI/inference/stable/2023-05-15/inference.json"
+  }
+}
+
+*/
