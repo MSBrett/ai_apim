@@ -1,0 +1,1 @@
+# APIM and Azure OpenAI landing zone
